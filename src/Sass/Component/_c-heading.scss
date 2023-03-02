@@ -1,0 +1,17 @@
+@use '../Global/' as *;
+
+.c-heading {
+  @include font-default;
+}
+
+.c-headingtitle {
+  font-weight: normal;
+
+  & > * + * {
+    margin-top: var(--s1);
+  }
+}
+
+.c-headingtitle__text {
+  font-size: rem(24);
+}

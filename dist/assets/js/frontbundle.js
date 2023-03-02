@@ -1,0 +1,2 @@
+!function(){"use strict";var e={393:function(e,o,t){t.r(o)}},o={};function t(r){var n=o[r];if(void 0!==n)return n.exports;var u=o[r]={exports:{}};return e[r](u,u.exports,t),u.exports}t.r=function(e){"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},t(393),new class{constructor(e){console.log(e)}}("front")}();
+//# sourceMappingURL=frontbundle.js.map

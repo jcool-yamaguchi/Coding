@@ -1,0 +1,5 @@
+@use '../Global/' as *;
+
+.l-footer {
+  @include font-default;
+}
