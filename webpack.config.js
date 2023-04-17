@@ -4,31 +4,44 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 // HTML出力
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+// dist出力時にリセット
+const CleanPlugin = require('clean-webpack-plugin');
+// 環境変数の取得
+const isProduction = process.env.NODE_ENV === 'production';
 
-module.exports = {
-  mode: 'development',
+//共通の設定
+const config = {
+  //　エントリーポイント
   entry: {
     front: './src/lib/app.ts', // frontページ用のJavaScript
     about: './src/lib/about-app.ts', // aboutページ用のJavaScript
+    // その他ページを増やす場合はここに追加
   },
-  // entry: './src/lib/app.ts', // 単数のエントリーポイントのみはこれのみでOK
   output: {
     filename: './assets/js/[name]bundle.js',
     path: path.resolve(__dirname, 'dist'),
   },
-  devServer: {
-    static: 'dist',
-    open: true,
-    hot: true,
-    host: '0.0.0.0',
-    watchFiles: {
-      paths: ['src/**/*'],
-    },
-  },
-  resolve: {
-    extensions: ['.ts', '.js'],
-  },
-  devtool: 'source-map',
+  plugins: [
+    // CSSを別ファイルに出力する
+    new MiniCssExtractPlugin({
+      filename: 'assets/css/style.css',
+    }),
+    ...[
+      // ここで指定したファイル名でdistに出力される
+      {
+        template: './src/html/index.html', // テンプレートファイル
+        filename: 'index.html', // 出力ファイル名
+        hash: true, // バンドルしたファイル名にハッシュ値を付与する
+        chunks: ['front'], // バンドルするJavaScriptファイル
+      },
+      {
+        filename: 'about.html',
+        template: './src/html/about.html',
+        hash: true,
+        chunks: ['about'],
+      },
+    ].map((page) => new HtmlWebpackPlugin(page)),
+  ],
   module: {
     rules: [
       //sass
@@ -95,19 +108,31 @@ module.exports = {
       },
     ],
   },
-  plugins: [
-    new MiniCssExtractPlugin({
-      filename: 'assets/css/style.css',
-    }),
-    new HtmlWebpackPlugin({
-      template: './src/html/index.html',
-      hash: true,
-    }),
-    // new HtmlWebpackPlugin({
-    //   filename: 'about.html',
-    //   template: './src/html/about.html',
-    //   hash: true,
-    //   // chunks: []
-    // }),
-  ],
+  resolve: {
+    extensions: ['.ts', '.js'],
+  },
+  devServer: {
+    static: 'dist',
+    open: true,
+    hot: true,
+    host: '0.0.0.0',
+    watchFiles: {
+      paths: ['src/**/*'],
+    },
+  },
+  devtool: 'source-map',
+};
+
+module.exports = () => {
+  if (isProduction) {
+    // 本番環境のときの設定
+    config.mode = 'production';
+    // configにプラグインの追加
+    config.plugins.push(new CleanPlugin.CleanWebpackPlugin());
+  }
+  if (!isProduction) {
+    // 開発環境のときの設定
+    config.mode = 'development';
+  }
+  return config;
 };
